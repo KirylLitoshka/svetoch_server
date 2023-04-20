@@ -3,4 +3,4 @@ electricity:
   password: test
   host: localhost
   port: 5432
-  database: electricity
+  database: energy
