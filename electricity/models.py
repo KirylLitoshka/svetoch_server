@@ -1,7 +1,7 @@
 import sqlalchemy as sa
 
 __all__ = [
-    "metadata", "areas", "ciphers"
+    "metadata", "areas", "ciphers", "rates"
 ]
 
 metadata = sa.MetaData()
@@ -20,4 +20,11 @@ ciphers = sa.Table(
     sa.Column("rate_id", sa.Integer, sa.ForeignKey(
         "rates.id", ondelete="SET NULL"), nullable=True
     )
+)
+
+
+rates = sa.Table(
+    "rates", metadata,
+    sa.Column("id", sa.Integer, primary_key=True),
+    sa.Column("title", sa.String, nullable=False)
 )
