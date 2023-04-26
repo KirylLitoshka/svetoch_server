@@ -43,7 +43,7 @@ class ListView(BaseView):
         async with self.request.app['db'].connect() as conn:
             cursor = await conn.execute(select(self.model).order_by(self.model.c.id))
             result = [dict(row) for row in cursor.fetchall()]
-            return web.json_response(data=result, status=200, dumps=pretty_json)
+            return web.json_response({"status": "success", "items": result}, status=200, dumps=pretty_json)
 
     async def post(self):
         async with self.request.app["db"].begin() as conn:
