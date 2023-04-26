@@ -22,7 +22,6 @@ ciphers = sa.Table(
     )
 )
 
-
 rates = sa.Table(
     "rates", metadata,
     sa.Column("id", sa.Integer, primary_key=True),

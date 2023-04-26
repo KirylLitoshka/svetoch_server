@@ -7,4 +7,9 @@ routes = [
     web.route("GET", "/areas/{id}", AreaDetailView),
     web.route("PATCH", "/areas/{id}", AreaDetailView),
     web.route("DELETE", "/areas/{id}", AreaDetailView),
+    web.route("GET", "/ciphers", CiphersListView),
+    web.route("POST", "/ciphers", CiphersListView),
+    web.route("GET", "/ciphers/{id}", CipherDetailView),
+    web.route("PATCH", "/ciphers/{id}", CipherDetailView),
+    web.route("DELETE", "/ciphers/{id}", CipherDetailView),
 ]
