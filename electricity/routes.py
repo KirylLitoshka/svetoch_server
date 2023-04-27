@@ -16,5 +16,10 @@ routes = [
     web.route("POST", "/rates", RatesListView),
     web.route("GET", "/rates/{id}", RateDetailView),
     web.route("PATCH", "/rates/{id}", RateDetailView),
-    web.route("DELETE", "/rates/{id}", RateDetailView), 
+    web.route("DELETE", "/rates/{id}", RateDetailView),
+    web.route("GET", "/meters", MetersListView),
+    web.route("POST", "/meters", MetersListView),
+    web.route("GET", "/meters/{id}", MeterDetailView),
+    web.route("PATCH", "/meters/{id}", MeterDetailView),
+    web.route("DELETE", "/meters/{id}", MeterDetailView)
 ]

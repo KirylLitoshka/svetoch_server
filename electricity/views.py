@@ -3,7 +3,10 @@ from sqlalchemy.sql import and_, func, select, text
 from views import DetailView, ListView, pretty_json, web
 
 __all__ = [
-    "AreasListView", "AreaDetailView", "CiphersListView", "CipherDetailView", "RatesListView", "RateDetailView"
+    "AreasListView", "AreaDetailView",
+    "CiphersListView", "CipherDetailView",
+    "RatesListView", "RateDetailView",
+    "MetersListView", "MeterDetailView"
 ]
 
 
@@ -49,3 +52,11 @@ class RatesListView(ListView):
 
 class RateDetailView(DetailView):
     model = rates
+
+
+class MetersListView(ListView):
+    model = meters
+
+
+class MeterDetailView(DetailView):
+    model = meters
