@@ -6,7 +6,8 @@ __all__ = [
     "AreasListView", "AreaDetailView",
     "CiphersListView", "CipherDetailView",
     "RatesListView", "RateDetailView",
-    "MetersListView", "MeterDetailView"
+    "MetersListView", "MeterDetailView",
+    "WorkshopsListView", "WorkshopDetailView"
 ]
 
 
@@ -60,3 +61,11 @@ class MetersListView(ListView):
 
 class MeterDetailView(DetailView):
     model = meters
+
+
+class WorkshopsListView(ListView):
+    model = workshops
+
+
+class WorkshopDetailView(DetailView):
+    model = workshops
