@@ -1,7 +1,7 @@
 import sqlalchemy as sa
 
 __all__ = [
-    "metadata", "areas", "ciphers", "rates", "rates_history", "meters"
+    "metadata", "areas", "ciphers", "rates", "rates_history", "meters", "workshops"
 ]
 
 metadata = sa.MetaData()
@@ -44,4 +44,10 @@ meters = sa.Table(
     sa.Column("title", sa.String, nullable=False),
     sa.Column("capacity", sa.Integer, nullable=False),
     sa.UniqueConstraint("title", "capacity", name="idx_name_capacity")
+)
+
+workshops = sa.Table(
+    "workshops", metadata,
+    sa.Column("id", sa.Integer, primary_key=True),
+    sa.Column("title", sa.String, unique=True, nullable=False)
 )
