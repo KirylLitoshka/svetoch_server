@@ -1,7 +1,7 @@
 import sqlalchemy as sa
 
 __all__ = [
-    "metadata", "areas", "ciphers", "rates", "rates_history"
+    "metadata", "areas", "ciphers", "rates", "rates_history", "meters"
 ]
 
 metadata = sa.MetaData()
@@ -31,8 +31,17 @@ rates = sa.Table(
 rates_history = sa.Table(
     "rates_history", metadata,
     sa.Column("id", sa.Integer, primary_key=True),
-    sa.Column("rate_id", sa.Integer, sa.ForeignKey("rates.id", ondelete="CASCADE")),
+    sa.Column("rate_id", sa.Integer, sa.ForeignKey(
+        "rates.id", ondelete="CASCADE")),
     sa.Column("entry_date", sa.Date, nullable=False),
     sa.Column("value", sa.Float, nullable=False),
     sa.UniqueConstraint("rate_id", "entry_date", name="idx_rate_id_entry_date")
+)
+
+meters = sa.Table(
+    "meters", metadata,
+    sa.Column("id", sa.Integer, primary_key=True),
+    sa.Column("title", sa.String, nullable=False),
+    sa.Column("capacity", sa.Integer, nullable=False),
+    sa.UniqueConstraint("title", "capacity", name="idx_name_capacity")
 )
