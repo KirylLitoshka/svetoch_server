@@ -52,6 +52,20 @@ workshops = sa.Table(
     sa.Column("title", sa.String, unique=True, nullable=False)
 )
 
+objects = sa.Table(
+    "objects", metadata,
+    sa.Column("id", sa.Integer, primary_key=True),
+    sa.Column("title", sa.String, nullable=False),
+    sa.Column("cipher_id", sa.Integer, sa.ForeignKey("ciphers.id", ondelete="SET NULL"), nullable=True),
+    sa.Column("area_id", sa.Integer, sa.ForeignKey("areas.id", ondelete="SET NULL"), nullable=True),
+    sa.Column("calculation_factor", sa.Integer, default=1),
+    sa.Column("subscriber_type", sa.Integer, nullable=False, default=1),
+    sa.Column("break_percentage", sa.Float, nullable=False, default=0.0),
+    sa.Column("is_closed", sa.Boolean),
+    sa.Column("counting_point", sa.Integer, nullable=False, default=0),
+    sa.Column("ee", sa.Integer, nullable=False, default=0)
+)
+
 object_meters = sa.Table(
     "object_meters", metadata,
     sa.Column("id", sa.Integer, primary_key=True),
