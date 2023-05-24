@@ -17,7 +17,7 @@ class DetailView(BaseView):
         async with self.request.app["db"].connect() as conn:
             cursor = await conn.execute(select(self.model).where(self.model.c.id == item_id))
             result = dict(cursor.fetchone())
-            return web.json_response({"success": True, "data": result})
+            return web.json_response({"success": True, "data": result}, dumps=pretty_json)
 
     async def patch(self):
         item_id = int(self.request.match_info["id"])
@@ -27,7 +27,7 @@ class DetailView(BaseView):
                 update(self.model).where(
                     self.model.c.id == item_id).values(**post_data)
             )
-            return web.json_response({"status": "success"}, status=200)
+            return web.json_response({"status": "success"}, status=200, dumps=pretty_json)
 
     async def delete(self):
         item_id = int(self.request.match_info["id"])
@@ -35,7 +35,7 @@ class DetailView(BaseView):
             await conn.execute(
                 delete(self.model).where(self.model.c.id == item_id)
             )
-            return web.json_response({"status": "success"}, status=200)
+            return web.json_response({"status": "success"}, status=200, dumps=pretty_json)
 
 
 class ListView(BaseView):
