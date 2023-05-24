@@ -1,7 +1,8 @@
 import sqlalchemy as sa
 
 __all__ = [
-    "metadata", "areas", "ciphers", "rates", "rates_history", "meters", "workshops"
+    "metadata", "areas", "ciphers", "rates", "rates_history",
+    "meters", "workshops", "objects", "object_meters"
 ]
 
 metadata = sa.MetaData()
@@ -19,7 +20,7 @@ ciphers = sa.Table(
     sa.Column("title", sa.String, nullable=False),
     sa.Column("rate_id", sa.Integer, sa.ForeignKey(
         "rates.id", ondelete="SET NULL"), nullable=True
-              )
+    )
 )
 
 rates = sa.Table(
@@ -43,7 +44,6 @@ meters = sa.Table(
     sa.Column("id", sa.Integer, primary_key=True),
     sa.Column("title", sa.String, nullable=False),
     sa.Column("capacity", sa.Integer, nullable=False),
-    sa.UniqueConstraint("title", "capacity", name="idx_name_capacity")
 )
 
 workshops = sa.Table(
@@ -56,23 +56,27 @@ objects = sa.Table(
     "objects", metadata,
     sa.Column("id", sa.Integer, primary_key=True),
     sa.Column("title", sa.String, nullable=False),
-    sa.Column("cipher_id", sa.Integer, sa.ForeignKey("ciphers.id", ondelete="SET NULL"), nullable=True),
-    sa.Column("area_id", sa.Integer, sa.ForeignKey("areas.id", ondelete="SET NULL"), nullable=True),
+    sa.Column("cipher_id", sa.Integer, sa.ForeignKey(
+        "ciphers.id", ondelete="SET NULL"), nullable=True),
+    sa.Column("area_id", sa.Integer, sa.ForeignKey(
+        "areas.id", ondelete="SET NULL"), nullable=True),
     sa.Column("calculation_factor", sa.Integer, default=1),
     sa.Column("subscriber_type", sa.Integer, nullable=False, default=1),
     sa.Column("break_percentage", sa.Float, nullable=False, default=0.0),
     sa.Column("is_closed", sa.Boolean),
-    sa.Column("counting_point", sa.Integer, nullable=False, default=0),
+    sa.Column("counting_point", sa.Integer, nullable=True),
     sa.Column("ee", sa.Integer, nullable=False, default=0)
 )
 
 object_meters = sa.Table(
     "object_meters", metadata,
     sa.Column("id", sa.Integer, primary_key=True),
-    sa.Column("object_id", sa.Integer, sa.ForeignKey("objects.id", ondelete="CASCADE")),
-    sa.Column("meter_id", sa.Integer, sa.ForeignKey("meters.id", ondelete="SET NULL"), nullable=True),
-    sa.Column("meter_number", sa.String, nullable=True),
-    sa.Column("meter_installation_date", sa.Date, nullable=True),
-    sa.Column("meter_last_reading", sa.Float, default=0.0),
-    sa.Column("meter_heating_percentage", sa.Float, default=0.0)
+    sa.Column("object_id", sa.Integer, sa.ForeignKey(
+        "objects.id", ondelete="CASCADE")),
+    sa.Column("meter_id", sa.Integer, sa.ForeignKey(
+        "meters.id", ondelete="SET NULL"), nullable=True),
+    sa.Column("number", sa.String, nullable=True),
+    sa.Column("installation_date", sa.Date, nullable=True),
+    sa.Column("last_reading", sa.Float, default=0.0),
+    sa.Column("heating_percentage", sa.Float, default=0.0)
 )
