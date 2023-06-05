@@ -12,7 +12,9 @@ __all__ = [
     "MetersListView", "MeterDetailView",
     "WorkshopsListView", "WorkshopDetailView",
     "ObjectsListView", "ObjectDetailView",
-    "ObjectMeterDetailView", "ObjectMetersListView"
+    "ObjectMeterDetailView", "ObjectMetersListView",
+    "LimitsListView", "LimitDetailView",
+    "SubObjectsListView", "SubObjectDetailView"
 ]
 
 
@@ -102,7 +104,8 @@ class ObjectsListView(ListView):
                     literal_column(last_objects_meters.name)
                 ).label("meter")
             ).select_from(
-                objects.join(ciphers).join(areas).join(last_objects_meters, isouter=True)
+                objects.join(ciphers).join(areas).join(
+                    last_objects_meters, isouter=True)
             ).order_by(objects.c.id)
 
             cursor = await conn.execute(smtm)
@@ -136,7 +139,7 @@ class ObjectMetersListView(ListView):
             )
             result = [dict(row) for row in cursor.fetchall()]
             return web.json_response({"success": True, "items": result}, dumps=pretty_json)
-        
+
     async def post(self):
         object_id = int(self.request.match_info['object_id'])
         request_data = await self.request.json()
@@ -147,12 +150,11 @@ class ObjectMetersListView(ListView):
         async with self.request.app['db'].begin() as conn:
             await conn.execute(
                 self.model.insert().values(
-                    object_id = object_id,
+                    object_id=object_id,
                     **request_data
                 )
             )
             return web.json_response({"success": True})
-
 
 
 class ObjectMeterDetailView(DetailView):
@@ -193,3 +195,19 @@ class ObjectMeterDetailView(DetailView):
                 ).values(**request_data)
             )
             return web.json_response({"success": True})
+
+
+class LimitsListView(ListView):
+    model = limits
+
+
+class LimitDetailView(DetailView):
+    model = limits
+
+
+class SubObjectsListView(LimitsListView):
+    model = subobjects
+
+
+class SubObjectDetailView(DetailView):
+    model = subobjects
