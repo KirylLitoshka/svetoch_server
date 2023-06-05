@@ -2,7 +2,8 @@ import sqlalchemy as sa
 
 __all__ = [
     "metadata", "areas", "ciphers", "rates", "rates_history",
-    "meters", "workshops", "objects", "object_meters"
+    "meters", "workshops", "objects", "object_meters", "limits",
+    "subobjects"
 ]
 
 metadata = sa.MetaData()
@@ -80,3 +81,16 @@ object_meters = sa.Table(
     sa.Column("last_reading", sa.Float, default=0.0),
     sa.Column("heating_percentage", sa.Float, default=0.0)
 )
+
+limits = sa.Table(
+    "limits", metadata,
+    sa.Column("id", sa.Integer, primary_key=True),
+    sa.Column("title", sa.String, unique=True, nullable=False)
+)
+
+subobjects = sa.Table(
+    "subobjects", metadata,
+    sa.Column("id", sa.Integer, primary_key=True, unique=True),
+    sa.Column("title", sa.String, unique=True, nullable=False)
+)
+
