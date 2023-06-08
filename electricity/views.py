@@ -14,7 +14,8 @@ __all__ = [
     "ObjectsListView", "ObjectDetailView",
     "ObjectMeterDetailView", "ObjectMetersListView",
     "LimitsListView", "LimitDetailView",
-    "SubObjectsListView", "SubObjectDetailView"
+    "SubObjectsListView", "SubObjectDetailView",
+    "BanksListView", "BankDetailView"
 ]
 
 
@@ -211,3 +212,11 @@ class SubObjectsListView(LimitsListView):
 
 class SubObjectDetailView(DetailView):
     model = subobjects
+
+
+class BanksListView(ListView):
+    model = banks
+
+
+class BankDetailView(DetailView):
+    model = banks

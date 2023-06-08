@@ -48,4 +48,9 @@ routes = [
     web.route("GET", "/subobjects/{id}", SubObjectDetailView),
     web.route("PATCH", "/subobjects/{id}", SubObjectDetailView),
     web.route("DELETE", "/subobjects/{id}", SubObjectDetailView),
+    web.route("GET", "/banks", BanksListView),
+    web.route("POST", "/banks", BanksListView),
+    web.route("GET", "/banks/{id}", BankDetailView),
+    web.route("PATCH", "/banks/{id}", BankDetailView),
+    web.route("DELETE", "/banks/{id}", BankDetailView),
 ]
