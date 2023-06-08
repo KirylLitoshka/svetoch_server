@@ -3,7 +3,7 @@ import sqlalchemy as sa
 __all__ = [
     "metadata", "areas", "ciphers", "rates", "rates_history",
     "meters", "workshops", "objects", "object_meters", "limits",
-    "subobjects"
+    "subobjects", "banks"
 ]
 
 metadata = sa.MetaData()
@@ -94,3 +94,9 @@ subobjects = sa.Table(
     sa.Column("title", sa.String, unique=True, nullable=False)
 )
 
+banks = sa.Table(
+    "banks", metadata,
+    sa.Column("id", sa.Integer, primary_key=True, unique=True),
+    sa.Column("title", sa.String, nullable=False),
+    sa.Column("code", sa.String, nullable=False, unique=True)
+)
