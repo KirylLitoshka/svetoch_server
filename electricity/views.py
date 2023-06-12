@@ -15,7 +15,8 @@ __all__ = [
     "ObjectMeterDetailView", "ObjectMetersListView",
     "LimitsListView", "LimitDetailView",
     "SubObjectsListView", "SubObjectDetailView",
-    "BanksListView", "BankDetailView"
+    "BanksListView", "BankDetailView",
+    "RentersListView", "RenterDetailView"
 ]
 
 
@@ -220,3 +221,34 @@ class BanksListView(ListView):
 
 class BankDetailView(DetailView):
     model = banks
+
+
+class RentersListView(ListView):
+    model = renters
+
+    async def post(self):
+        post_data = await self.request.json()
+        if post_data.get("contract_date", None):
+            post_data['contract_date'] = datetime.strptime(
+                post_data['contract_date'], "%Y-%m-%d"
+            ).date()
+        async with self.request.app['db'].begin() as conn:
+            await conn.execute(self.model.insert().values(**post_data))
+            return web.json_response({"success": True})
+
+
+class RenterDetailView(DetailView):
+    model = renters
+
+    async def patch(self):
+        patch_data = await self.request.json()
+        renter_id = int(self.request.match_info['id'])
+        if patch_data.get("contract_date", None):
+            patch_data['contract_date'] = datetime.strptime(
+                patch_data['contract_date'], "%Y-%m-%d"
+            ).date()
+        async with self.request.app['db'].begin() as conn:
+            await conn.execute(
+                self.model.update().where(self.model.c.id == renter_id).values(**patch_data)
+            )
+            return web.json_response({"success": True})
