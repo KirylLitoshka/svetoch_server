@@ -3,7 +3,7 @@ import sqlalchemy as sa
 __all__ = [
     "metadata", "areas", "ciphers", "rates", "rates_history",
     "meters", "workshops", "objects", "object_meters", "limits",
-    "subobjects", "banks"
+    "subobjects", "banks", "renters"
 ]
 
 metadata = sa.MetaData()
@@ -99,4 +99,41 @@ banks = sa.Table(
     sa.Column("id", sa.Integer, primary_key=True, unique=True),
     sa.Column("title", sa.String, nullable=False),
     sa.Column("code", sa.String, nullable=False, unique=True)
+)
+
+
+"""
+Renters Table:
+id - идентификатор
+name - краткое наименование
+full_name - полное наименование организации
+bank_id - идентификатор банка организации
+checking_account - расчетный счет
+registration_number - унп
+respondent_number - номер респондента (окпо)
+contract_number - номер договора
+contract_date - дата заключения договора
+is_bank_payer - для создания платежного поручения
+address - адрес
+contacts - контакты 
+is_public_sector - ялвляется ли бюджетной организацией 
+"""
+
+renters = sa.Table(
+    "renters", metadata,
+    sa.Column("id", sa.Integer, primary_key=True, unique=True),
+    sa.Column("name", sa.String, nullable=False),
+    sa.Column("full_name", sa.String, nullable=False),
+    sa.Column("bank_id", sa.Integer, sa.ForeignKey("banks.id", ondelete="SET NULL"), nullable=True),
+    sa.Column("checking_account", sa.String, nullable=True),
+    sa.Column("registration_number", sa.String, nullable=True),
+    sa.Column("respondent_number", sa.String, nullable=True),
+    sa.Column("contract_number", sa.String, nullable=True),
+    sa.Column("contract_date", sa.Date, nullable=True),
+    sa.Column("is_bank_payer", sa.Boolean, nullable=False),
+    sa.Column("address", sa.String, nullable=True),
+    sa.Column("contacts", sa.String, nullable=True),
+    sa.Column("is_public_sector", sa.Boolean, default=False),
+    sa.Column("is_closed", sa.Boolean, default=False),
+    sa.UniqueConstraint("registration_number", "contract_number", "contract_date", name="uniq_field")
 )
