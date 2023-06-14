@@ -3,7 +3,7 @@ import sqlalchemy as sa
 __all__ = [
     "metadata", "areas", "ciphers", "rates", "rates_history",
     "meters", "workshops", "objects", "object_meters", "limits",
-    "subobjects", "banks", "renters"
+    "subobjects", "banks", "renters", "object_limits"
 ]
 
 metadata = sa.MetaData()
@@ -124,7 +124,8 @@ renters = sa.Table(
     sa.Column("id", sa.Integer, primary_key=True, unique=True),
     sa.Column("name", sa.String, nullable=False),
     sa.Column("full_name", sa.String, nullable=False),
-    sa.Column("bank_id", sa.Integer, sa.ForeignKey("banks.id", ondelete="SET NULL"), nullable=True),
+    sa.Column("bank_id", sa.Integer, sa.ForeignKey(
+        "banks.id", ondelete="SET NULL"), nullable=True),
     sa.Column("checking_account", sa.String, nullable=True),
     sa.Column("registration_number", sa.String, nullable=True),
     sa.Column("respondent_number", sa.String, nullable=True),
@@ -135,5 +136,21 @@ renters = sa.Table(
     sa.Column("contacts", sa.String, nullable=True),
     sa.Column("is_public_sector", sa.Boolean, default=False),
     sa.Column("is_closed", sa.Boolean, default=False),
-    sa.UniqueConstraint("registration_number", "contract_number", "contract_date", name="uniq_field")
+    sa.UniqueConstraint("registration_number", "contract_number",
+                        "contract_date", name="uniq_field")
+)
+
+
+object_limits = sa.Table(
+    "object_limits", metadata,
+    sa.Column("id", sa.Integer, primary_key=True),
+    sa.Column("limit_id", sa.Integer, sa.ForeignKey(
+        "limits.id", ondelete="SET NULL"), nullable=True),
+    sa.Column("object_id", sa.Integer, sa.ForeignKey(
+        "objects.id", ondelete="CASCADE")),
+    sa.Column("subobject_id", sa.Integer, sa.ForeignKey(
+        "subobjects.id", ondelete="CASCADE"), nullable=True),
+    sa.Column("renter_id", sa.Integer, sa.ForeignKey(
+        "renters.id", ondelete="CASCADE"), nullable=True),
+    sa.Column("percentage", sa.Float, default=0)
 )
