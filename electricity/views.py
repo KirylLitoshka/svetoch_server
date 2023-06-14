@@ -2,6 +2,7 @@ import asyncio
 from datetime import datetime
 from electricity.models import *
 from sqlalchemy.sql import and_, func, select, desc
+from sqlalchemy.dialects import postgresql as psql
 from sqlalchemy.sql.expression import literal_column
 from views import DetailView, ListView, pretty_json, web
 
@@ -16,7 +17,8 @@ __all__ = [
     "LimitsListView", "LimitDetailView",
     "SubObjectsListView", "SubObjectDetailView",
     "BanksListView", "BankDetailView",
-    "RentersListView", "RenterDetailView"
+    "RentersListView", "RenterDetailView",
+    "ObjectLimitsListView", "ObjectLimitDetailView"
 ]
 
 
@@ -252,3 +254,32 @@ class RenterDetailView(DetailView):
                 self.model.update().where(self.model.c.id == renter_id).values(**patch_data)
             )
             return web.json_response({"success": True})
+
+
+class ObjectLimitsListView(ListView):
+    model = object_limits
+
+    async def get(self):
+        object_id = int(self.request.match_info['id'])
+        async with self.request.app['db'].connect() as conn:
+            cursor = await conn.execute(
+                select(object_limits).where(object_limits.c.object_id ==
+                                            object_id).order_by(object_limits.c.id)
+            )
+            result = [dict(row) for row in cursor.fetchall()]
+            return web.json_response({"success": True, "items": result})
+
+    async def post(self):
+        post_data = await self.request.json()
+        async with self.request.app['db'].begin() as conn:
+            for data in post_data:
+                insert_query = psql.insert(self.model).values(data)
+                await conn.execute(insert_query.on_conflict_do_update(
+                    index_elements=[self.model.c.id],
+                    set_=insert_query.excluded
+                ))
+            return web.json_response({"success": True})
+
+
+class ObjectLimitDetailView(DetailView):
+    model = object_limits
