@@ -18,7 +18,7 @@ __all__ = [
     "SubObjectsListView", "SubObjectDetailView",
     "BanksListView", "BankDetailView",
     "RentersListView", "RenterDetailView",
-    "ObjectLimitsListView", "ObjectLimitDetailView"
+    "ObjectLimitsListView", "ObjectLimitDetailView",
 ]
 
 
@@ -86,6 +86,8 @@ class ObjectsListView(ListView):
     model = objects
 
     async def get(self):
+        subobject_id = self.request.query.get("subobject")
+        renter_id = self.request.query.get('renter')
         async with self.request.app['db'].connect() as conn:
             object_meters_keys = [
                 object_meters.c[key] for key in object_meters.c.keys() if key != "meter_id"
@@ -109,9 +111,16 @@ class ObjectsListView(ListView):
                 ).label("meter")
             ).select_from(
                 objects.join(ciphers).join(areas).join(
-                    last_objects_meters, isouter=True)
-            ).order_by(objects.c.id)
+                    last_objects_meters, isouter=True
+                ).join(object_limits, isouter=True)
+            )
 
+            if subobject_id:
+                smtm = smtm.where(
+                    object_limits.c.subobject_id == int(subobject_id))
+            elif renter_id:
+                smtm = smtm.where(object_limits.c.renter_id == int(renter_id))
+            smtm = smtm.order_by(objects.c.id)
             cursor = await conn.execute(smtm)
             result = [dict(row) for row in cursor.fetchall()]
             return web.json_response({"success": True, "items": result}, dumps=pretty_json)
@@ -211,6 +220,17 @@ class LimitDetailView(DetailView):
 
 class SubObjectsListView(LimitsListView):
     model = subobjects
+
+    async def get(self):
+        async with self.request.app['db'].connect() as conn:
+            cursor = await conn.execute(select(
+                self.model, func.count(
+                    object_limits.c.id).label("objects_amount")
+            ).select_from(
+                self.model.join(object_limits)
+            ).group_by(self.model.c.id).order_by(self.model.c.id))
+            result = [dict(row) for row in cursor.fetchall()]
+            return web.json_response({"success": True, "items": result}, dumps=pretty_json)
 
 
 class SubObjectDetailView(DetailView):
