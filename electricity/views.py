@@ -19,6 +19,7 @@ __all__ = [
     "BanksListView", "BankDetailView",
     "RentersListView", "RenterDetailView",
     "ObjectLimitsListView", "ObjectLimitDetailView",
+    "AddressesListView", "AddressDetailView"
 ]
 
 
@@ -109,11 +110,12 @@ class ObjectsListView(ListView):
                 func.row_to_json(areas.table_valued()).label("area"),
                 func.row_to_json(
                     literal_column(last_objects_meters.name)
-                ).label("meter")
+                ).label("meter"),
+                func.row_to_json(addresses.table_valued()).label("address")
             ).select_from(
                 objects.join(ciphers).join(areas).join(
                     last_objects_meters, isouter=True
-                ).join(object_limits, isouter=True)
+                ).join(object_limits, isouter=True).join(addresses, isouter=True)
             )
 
             if subobject_id:
@@ -317,3 +319,11 @@ class ObjectLimitsListView(ListView):
 
 class ObjectLimitDetailView(DetailView):
     model = object_limits
+
+
+class AddressesListView(ListView):
+    model = addresses
+
+
+class AddressDetailView(DetailView):
+    model = addresses

@@ -61,4 +61,9 @@ routes = [
     web.route("GET", "/renters/{id}", RenterDetailView),
     web.route("PATCH", "/renters/{id}", RenterDetailView),
     web.route("DELETE", "/renters/{id}", RenterDetailView),
+    web.route("GET", "/addresses", AddressesListView),
+    web.route("POST", "/addresses", AddressesListView),
+    web.route("GET", "/addresses/{id}", AddressDetailView),
+    web.route("PATCH", "/addresses/{id}", AddressDetailView),
+    web.route("DELETE", "/addresses/{id}", AddressDetailView),
 ]
