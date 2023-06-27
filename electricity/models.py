@@ -3,7 +3,7 @@ import sqlalchemy as sa
 __all__ = [
     "metadata", "areas", "ciphers", "rates", "rates_history",
     "meters", "workshops", "objects", "object_meters", "limits",
-    "subobjects", "banks", "renters", "object_limits"
+    "subobjects", "banks", "renters", "object_limits", "addresses"
 ]
 
 metadata = sa.MetaData()
@@ -66,6 +66,10 @@ objects = sa.Table(
     sa.Column("break_percentage", sa.Float, nullable=False, default=0.0),
     sa.Column("is_closed", sa.Boolean),
     sa.Column("counting_point", sa.Integer, nullable=True),
+    sa.Column("jeu_code", sa.String, nullable=True),
+    sa.Column("address_id", sa.Integer, sa.ForeignKey(
+        "addresses.id", ondelete="SET NULL"), nullable=True),
+    sa.Column("house_number", sa.String, nullable=True),
     sa.Column("ee", sa.Integer, nullable=False, default=0)
 )
 
@@ -153,4 +157,13 @@ object_limits = sa.Table(
     sa.Column("renter_id", sa.Integer, sa.ForeignKey(
         "renters.id", ondelete="CASCADE"), nullable=True),
     sa.Column("percentage", sa.Float, default=0)
+)
+
+addresses = sa.Table(
+    "addresses", metadata,
+    sa.Column("id", sa.Integer, primary_key=True),
+    sa.Column("city_type", sa.String, nullable=False),
+    sa.Column("city_name", sa.String, nullable=False),
+    sa.Column("street_type", sa.String),
+    sa.Column("street_name", sa.String)
 )
