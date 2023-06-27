@@ -86,8 +86,9 @@ class ObjectsListView(ListView):
     model = objects
 
     async def get(self):
-        subobject_id = self.request.query.get("subobject")
+        subobject_id = self.request.query.get('subobject')
         renter_id = self.request.query.get('renter')
+        limit_id = self.request.query.get('limit')
         async with self.request.app['db'].connect() as conn:
             object_meters_keys = [
                 object_meters.c[key] for key in object_meters.c.keys() if key != "meter_id"
@@ -120,6 +121,8 @@ class ObjectsListView(ListView):
                     object_limits.c.subobject_id == int(subobject_id))
             elif renter_id:
                 smtm = smtm.where(object_limits.c.renter_id == int(renter_id))
+            elif limit_id:
+                smtm = smtm.where(object_limits.c.limit_id == int(limit_id))
             smtm = smtm.order_by(objects.c.id)
             cursor = await conn.execute(smtm)
             result = [dict(row) for row in cursor.fetchall()]
@@ -212,6 +215,17 @@ class ObjectMeterDetailView(DetailView):
 
 class LimitsListView(ListView):
     model = limits
+
+    async def get(self):
+        async with self.request.app['db'].connect() as conn:
+            cursor = await conn.execute(select(
+                self.model, func.count(
+                    object_limits.c.id).label("objects_amount")
+            ).select_from(
+                self.model.join(object_limits)
+            ).group_by(self.model.c.id).order_by(self.model.c.id))
+            result = [dict(row) for row in cursor.fetchall()]
+            return web.json_response({"success": True, "items": result}, dumps=pretty_json)
 
 
 class LimitDetailView(DetailView):
